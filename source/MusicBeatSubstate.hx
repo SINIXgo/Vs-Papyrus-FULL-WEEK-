@@ -44,7 +44,13 @@ class MusicBeatSubstate extends FlxSubState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
+		
+virtualPad = new FlxVirtualPad(DPad, Action);
+		add(virtualPad);
 
+		controls.setVirtualPadUI(virtualPad, DPad, Action);
+		trackedinputsUI = controls.trackedinputsUI;
+		controls.trackedinputsUI = [];
 
 		super.update(elapsed);
 	}
