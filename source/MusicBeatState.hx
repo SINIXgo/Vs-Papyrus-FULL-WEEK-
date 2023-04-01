@@ -86,7 +86,13 @@ androidControls = new AndroidControls();
 		if(FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
 
 		super.update(elapsed);
-	}
+	
+
+	
+
+		if (androidControls != null)
+
+			remove(androidControls);
 
 	private function updateSection():Void
 	{
