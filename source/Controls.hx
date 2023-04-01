@@ -469,7 +469,10 @@ class Controls extends FlxActionSet
 				inline forEachBound(Control.BACK, (action, state) -> addbuttonUI(action, VirtualPad.buttonB, state));
 
 			case NONE: // do nothing
-	}
+	
+public function setVirtualPadNOTES(VirtualPad:FlxVirtualPad, DPad:FlxDPadMode, Action:FlxActionMode) 
+	{
+	
 
 	static function init():Void
 	{
