@@ -43,7 +43,11 @@ class MusicBeatState extends FlxUIState
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
 		super.create();
 		
-
+#if android
+	var virtualPad:FlxVirtualPad;
+	var androidControls:AndroidControls;
+	var trackedinputsUI:Array<FlxActionInput> = [];
+	var trackedinputsNOTES:Array<FlxActionInput> = [];
 	
 
 		controls.trackedinputsUI = [];
