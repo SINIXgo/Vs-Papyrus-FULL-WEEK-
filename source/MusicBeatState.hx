@@ -59,7 +59,9 @@ virtualPad = new FlxVirtualPad(DPad, Action);
 	{
 		//everyStep();
 		var oldStep:Int = curStep;
-
+androidControls = new AndroidControls();
+    androidControls.alpha = 0.8;
+		
 		updateCurStep();
 		updateBeat();
 
