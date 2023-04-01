@@ -42,7 +42,13 @@ class MusicBeatState extends FlxUIState
 	override function create() {
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
 		super.create();
+		
+virtualPad = new FlxVirtualPad(DPad, Action);
+		add(virtualPad);
 
+		controls.setVirtualPadUI(virtualPad, DPad, Action);
+		trackedinputsUI = controls.trackedinputsUI;
+		controls.trackedinputsUI = [];
 		if(!skip) {
 			openSubState(new CustomFadeTransition(0.7, true));
 		}
