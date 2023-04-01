@@ -394,6 +394,26 @@ class Controls extends FlxActionSet
 
 	// inline
 	public function checkByName(name:Action):Bool
+	
+
+	
+
+	public var trackedinputsNOTES:Array<FlxActionInput> = [];
+
+	public function addbuttonNOTES(action:FlxActionDigital, button:FlxButton, state:FlxInputState)
+
+	{
+
+		var input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state);
+
+		trackedinputsNOTES.push(input);
+
+		action.add(input);
+
+	}
+
+	public function addbuttonUI(action:FlxActionDigital, button:FlxButton, state:FlxInputState)
+
 	{
 		#if debug
 		if (!byName.exists(name))
