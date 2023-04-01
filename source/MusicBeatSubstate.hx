@@ -71,8 +71,11 @@ virtualPad = new FlxVirtualPad(DPad, Action);
 	}
 
 	public function stepHit():Void
-	{
-		if (curStep % 4 == 0)
+	
+		#if android
+		if (virtualPad != null)
+			
+			if (curStep % 4 == 0)
 			beatHit();
 	}
 
