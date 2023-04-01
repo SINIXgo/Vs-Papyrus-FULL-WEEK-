@@ -54,7 +54,10 @@ virtualPad = new FlxVirtualPad(DPad, Action);
 
 		super.update(elapsed);
 	}
-
+#if android
+		if (trackedinputsUI != [])
+			controls.removeFlxInput(trackedinputsUI);
+	
 	private function updateBeat():Void
 	{
 		curBeat = Math.floor(curStep / 4);
