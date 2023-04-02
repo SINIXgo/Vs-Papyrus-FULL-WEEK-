@@ -19,7 +19,7 @@ import sys.FileSystem;
 import sys.io.File;
 #else
 
-import js.html.File;
+import 
 #end
 
 using StringTools;
