@@ -22,7 +22,7 @@ import sys.io.File;
 import 
 #end
 
-using StringTools;
+
 class AtlasFrameMaker extends FlxFramesCollection
 {
 	//public static var widthoffset:Int = 0;
