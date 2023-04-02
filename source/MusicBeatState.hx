@@ -14,15 +14,10 @@ import flixel.util.FlxGradient;
 import flixel.FlxState;
 import flixel.FlxBasic;
 #if android
-
 import android.AndroidControls;
-
 import android.flixel.FlxVirtualPad;
-
 import flixel.input.actions.FlxActionInput;
-
 import flixel.util.FlxDestroyUtil;
-
 #end
 class MusicBeatState extends FlxUIState
 {
@@ -39,77 +34,82 @@ class MusicBeatState extends FlxUIState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
-	override function create() {
-		var skip:Bool = FlxTransitionableState.skipNextTransOut;
-		super.create();
-		
-#if android
+	#if android
 	var virtualPad:FlxVirtualPad;
 	var androidControls:AndroidControls;
 	var trackedinputsUI:Array<FlxActionInput> = [];
 	var trackedinputsNOTES:Array<FlxActionInput> = [];
-	
 
-		controls.trackedinputsUI = [];
-virtualPad = new FlxVirtualPad(DPad, Action);
+	public function addVirtualPad(DPad:FlxDPadMode, Action:FlxActionMode)
+	{
+		virtualPad = new FlxVirtualPad(DPad, Action);
 		add(virtualPad);
 
 		controls.setVirtualPadUI(virtualPad, DPad, Action);
 		trackedinputsUI = controls.trackedinputsUI;
 		controls.trackedinputsUI = [];
-		if(!skip) {
-			openSubState(new CustomFadeTransition(0.7, true));
-		}
-		FlxTransitionableState.skipNextTransOut = false;
 	}
 
-	override function update(elapsed:Float)
+	public function removeVirtualPad()
 	{
-		//everyStep();
-		var oldStep:Int = curStep;
-androidControls = new AndroidControls();
-    androidControls.alpha = 0.8;
-		
-		updateCurStep();
-		updateBeat();
+		if (trackedinputsUI != [])
+			controls.removeFlxInput(trackedinputsUI);
 
-		if (oldStep != curStep)
+		if (virtualPad != null)
+			remove(virtualPad);
+	}
+
+	public function addAndroidControls()
+	{
+		androidControls = new AndroidControls();
+
+		switch (AndroidControls.getMode())
 		{
-			if(curStep > 0)
-				stepHit();
-
-			if(PlayState.SONG != null)
-			{
-				if (oldStep < curStep)
-					updateSection();
-				else
-					rollbackSection();
-			}
+			case 0 | 1 | 2: // RIGHT_FULL | LEFT_FULL | CUSTOM
+				controls.setVirtualPadNOTES(androidControls.virtualPad, RIGHT_FULL, NONE);
+			case 3: // BOTH_FULL
+				controls.setVirtualPadNOTES(androidControls.virtualPad, BOTH_FULL, NONE);
+			case 4: // HITBOX
+				controls.setHitBox(androidControls.hitbox);
+			case 5: // KEYBOARD
 		}
 
-		if(FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
+		trackedinputsNOTES = controls.trackedinputsNOTES;
+		controls.trackedinputsNOTES = [];
 
-		super.update(elapsed);
-	
+		var camControls = new flixel.FlxCamera();
+		FlxG.cameras.add(camControls);
+		camControls.bgColor.alpha = 0;
 
-	
+		androidControls.cameras = [camControls];
+		androidControls.visible = false;
+		add(androidControls);
+	}
+
+	public function removeAndroidControls()
+	{
+		if (trackedinputsNOTES != [])
+			controls.removeFlxInput(trackedinputsNOTES);
 
 		if (androidControls != null)
-
 			remove(androidControls);
+	}
 
-	private function updateSection():Void
+	public function addPadCamera()
 	{
-		if(stepsToDo < 1) stepsToDo = Math.round(getBeatsOnSection() * 4);
-		while(curStep >= stepsToDo)
+		if (virtualPad != null)
 		{
-			curSection++;
-			var beats:Float = getBeatsOnSection();
-			stepsToDo += Math.round(beats * 4);
-			sectionHit();
+			var camControls = new flixel.FlxCamera();
+			FlxG.cameras.add(camControls);
+			camControls.bgColor.alpha = 0;
+			virtualPad.cameras = [camControls];
 		}
 	}
-#if android
+	#end
+
+	override function destroy()
+	{
+		#if android
 		if (trackedinputsNOTES != [])
 			controls.removeFlxInput(trackedinputsNOTES);
 
@@ -132,7 +132,56 @@ androidControls = new AndroidControls();
 			androidControls = null;
 		}
 		#end
-			
+	}
+	override function create() {
+		var skip:Bool = FlxTransitionableState.skipNextTransOut;
+		super.create();
+
+		if(!skip) {
+			openSubState(new CustomFadeTransition(0.7, true));
+		}
+		FlxTransitionableState.skipNextTransOut = false;
+	}
+
+	override function update(elapsed:Float)
+	{
+		//everyStep();
+		var oldStep:Int = curStep;
+
+		updateCurStep();
+		updateBeat();
+
+		if (oldStep != curStep)
+		{
+			if(curStep > 0)
+				stepHit();
+
+			if(PlayState.SONG != null)
+			{
+				if (oldStep < curStep)
+					updateSection();
+				else
+					rollbackSection();
+			}
+		}
+
+		if(FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
+
+		super.update(elapsed);
+	}
+
+	private function updateSection():Void
+	{
+		if(stepsToDo < 1) stepsToDo = Math.round(getBeatsOnSection() * 4);
+		while(curStep >= stepsToDo)
+		{
+			curSection++;
+			var beats:Float = getBeatsOnSection();
+			stepsToDo += Math.round(beats * 4);
+			sectionHit();
+		}
+	}
+
 	private function rollbackSection():Void
 	{
 		if(curStep < 0) return;

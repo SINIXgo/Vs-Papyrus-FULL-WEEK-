@@ -29,11 +29,59 @@ class MusicBeatSubstate extends FlxSubState
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
-#if android
+
+	#if android
 	var virtualPad:FlxVirtualPad;
 	var trackedinputsUI:Array<FlxActionInput> = [];
 
 	public function addVirtualPad(DPad:FlxDPadMode, Action:FlxActionMode)
+	{
+		virtualPad = new FlxVirtualPad(DPad, Action);
+		add(virtualPad);
+
+		controls.setVirtualPadUI(virtualPad, DPad, Action);
+		trackedinputsUI = controls.trackedinputsUI;
+		controls.trackedinputsUI = [];
+	}
+
+	public function removeVirtualPad()
+	{
+		if (trackedinputsUI != [])
+			controls.removeFlxInput(trackedinputsUI);
+
+		if (virtualPad != null)
+			remove(virtualPad);
+	}
+
+	public function addPadCamera()
+	{
+		if (virtualPad != null)
+		{
+			var camControls = new flixel.FlxCamera();
+			FlxG.cameras.add(camControls);
+			camControls.bgColor.alpha = 0;
+			virtualPad.cameras = [camControls];
+		}
+	}
+	#end
+
+	override function destroy()
+	{
+		#if android
+		if (trackedinputsUI != [])
+			controls.removeFlxInput(trackedinputsUI);
+		#end
+
+		super.destroy();
+
+		#if android
+		if (virtualPad != null)
+		{
+			virtualPad = FlxDestroyUtil.destroy(virtualPad);
+			virtualPad = null;
+		}
+		#end
+	}
 	override function update(elapsed:Float)
 	{
 		//everyStep();
@@ -44,20 +92,11 @@ class MusicBeatSubstate extends FlxSubState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
-		
-virtualPad = new FlxVirtualPad(DPad, Action);
-		add(virtualPad);
 
-		controls.setVirtualPadUI(virtualPad, DPad, Action);
-		trackedinputsUI = controls.trackedinputsUI;
-		controls.trackedinputsUI = [];
 
 		super.update(elapsed);
 	}
-#if android
-		if (trackedinputsUI != [])
-			controls.removeFlxInput(trackedinputsUI);
-	
+
 	private function updateBeat():Void
 	{
 		curBeat = Math.floor(curStep / 4);
@@ -74,11 +113,8 @@ virtualPad = new FlxVirtualPad(DPad, Action);
 	}
 
 	public function stepHit():Void
-	
-		#if android
-		if (virtualPad != null)
-			
-			if (curStep % 4 == 0)
+	{
+		if (curStep % 4 == 0)
 			beatHit();
 	}
 
