@@ -400,7 +400,7 @@ class Controls extends FlxActionSet
 
 	
 
-	public function addbuttonNOTES(action:FlxActionDigital, button:FlxButton, state:FlxInputState)
+	public function addbuttonNOTES(action:FlxActionDigital, button:FlxButton, state:FlxInputState);
 
 	{
 
